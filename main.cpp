@@ -1,9 +1,12 @@
 /*
 *   Exercicio 1.
 *
-*   Crie uma paleta de cores onde cada pixel é colorido pelo valor de x e y. A saida do
-*   programa deve ser uma paleta muito proxima a paleta descrita abaixo:
 *
+*   Implemente o processo de ortogonalzação de GRAM-SCHIMDT. https://pt.wikipedia.org/wiki/Processo_de_Gram-Schmidt
+*
+*
+*   Exemplos: https://youtu.be/6eTCfirtKr8?t=9m50s
+*   (110)(011)(101)  -  (110)(-1/2 1/2 1)(2/3 -2/3 2/3)  -  (1/sqrt(2) 1/sqrt(2) 0)(-sqrt(1/6) sqrt(1/6) sqrt(2/3))(sqrt(3)/3 -sqrt(3)/3 sqrt(3)/3)
 *
 */
 
@@ -28,7 +31,8 @@
 
 /////////////////////////////DEFINES
 //Definiçao do string do menu
-#define menu "\n1-- Ortogonalizar vetores\n\n2-- Achar base ortonormal\n\n3-- Projecao de um vetor sobre um subespaco de V\n\n0--Sair\n\n"//Definiçao do tamaño do nome dos arquivos a salver e do formato deles
+#define menu "\n1-- Ortogonalizar vetores\n\n2-- Achar base ortonormal\n\n3-- Projecao de um vetor sobre um subespaco de V\n\n0--Sair\n\n"
+//Definiçao do tamaño do nome dos arquivos a salver e do formato deles
 #define CHAR_VACIO '_'
 #define DIMMAX 10
 #define NUMMAX 10
@@ -75,6 +79,7 @@ bool finalizar(){
 
 }
 
+//devolve o produto escalar de dois vetores passados como parametro
 float escalar(Vetor v, Vetor u){
 
     float result =0;
@@ -87,6 +92,7 @@ float escalar(Vetor v, Vetor u){
 
 }
 
+//devolve um vetor que é substraçao dos vetores passados como parametros (v-u)
 Vetor subs(Vetor v, Vetor u){
 
     Vetor s;
@@ -100,6 +106,7 @@ Vetor subs(Vetor v, Vetor u){
     return s;
 }
 
+//devolve um vetor que é soma dos vetores passados como parametros
 Vetor soma(Vetor v, Vetor u){
 
     Vetor s;
@@ -113,6 +120,7 @@ Vetor soma(Vetor v, Vetor u){
     return s;
 }
 
+//funçao usada para calcular a parte mais complexa do processo de gram-schmidt que receve o vetor vn e o vetor vn-i ja ortogonalizado e devolve a parte que tem que se substrair
 Vetor getAlfa(Vetor vetorj, Vetor v){
 
     Vetor aux;
@@ -127,6 +135,7 @@ Vetor getAlfa(Vetor vetorj, Vetor v){
     return aux;
 }
 
+//funçao para ortogonalizar. os loops percorrem cada vetor da lista e substrai n-1 vezes o resultado de getAlfa() com os vetores anteriores
 void ortogonalizar(vector<Vetor> &vetores, int num){
 
     Vetor aux;
@@ -146,6 +155,7 @@ void ortogonalizar(vector<Vetor> &vetores, int num){
     }
 }
 
+//Funçao que divide os vetores por seu modulo para obter a base ortonormal que formam
 void ortonormalizar(vector<Vetor> &vetores, int num){
 
     for(int i=0 ; i<num ; i++){
@@ -157,6 +167,8 @@ void ortonormalizar(vector<Vetor> &vetores, int num){
 
 }
 
+//Antes de ortogonalizar temos que comprovar se esses vetores sao linealmente independientes
+//para fazer isso pegamos cada coordenada de cada vetor e comprovamos se existe uma razao igual para as n componentes de cada par de vetores
 bool comprobarIndependencia(vector<Vetor> &vetores, int num){
 
     bool indep = true;
@@ -180,6 +192,7 @@ bool comprobarIndependencia(vector<Vetor> &vetores, int num){
     return indep;
 }
 
+// criamos o vetor projetado na base B seguindo o processo: v = <v1,e1>e1 + <v2,e2>e2 + <v3,e3>e3 + ... + <vn,en>en
 void projecao(vector<Vetor> vetores, Vetor &v, int num){
 
     Vetor aux;
@@ -194,6 +207,7 @@ void projecao(vector<Vetor> vetores, Vetor &v, int num){
 
 }
 
+//Funçoes que gerenciam as funcionalidades do programa
 bool opcao1(){
 
     int dim=0;
@@ -419,14 +433,8 @@ int main(){
             case(3):
                 finalizar = opcao3();
                 break;
-            case(4):
-                //finalizar = opcao4();
-                break;
-            case(5):
-                //finalizar = opcao5();
-                break;
             default:
-                //finalizar = true;
+                finalizar = true;
                 break;
         };
     }
