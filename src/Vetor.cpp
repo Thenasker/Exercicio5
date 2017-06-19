@@ -18,12 +18,15 @@
 
 using namespace std;
 
-Vetor::Vetor(){}
+Vetor::Vetor(){ modulo =0;}
 
 void Vetor::setDim(int dim)
 {
     dimen = dim;
     vals = new float[dim];
+    for(int i=0; i<dim ; i++){
+        vals[i] = 0;
+    }
 }
 
 void Vetor::inserirValor(int pos, float val){
@@ -53,12 +56,35 @@ string Vetor::aString(){
 
     result.insert(0,"(");
 
+    ss.precision(2);
+
     for(int i=0 ; i<dimen ; i++){
         ss << vals[i];
-        ss << ", ";
+        if(i != dimen-1) ss << ", ";
     }
     ss << ")";
     result.append(ss.str());
 
     return result;
 }
+
+void Vetor::setModulo(){
+
+    float soma = 0;
+
+    for(int i=0 ; i<dimen ; i++){
+        soma += pow(vals[i],2);
+    }
+
+    modulo = sqrt(soma);
+}
+
+float Vetor::getModulo(){
+    return modulo;
+}
+
+
+
+
+
+

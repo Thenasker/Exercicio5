@@ -49,3 +49,53 @@
 	<bitset>
 	"Vetor.h"
 
+1497840500 source:c:\users\thenasker\desktop\unifacs\lp\av2\exercicio5\main.cpp
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<windows.h>
+	<fstream>
+	<ctime>
+	<sstream>
+	<dirent.h>
+	<vector>
+	<iostream>
+	<algorithm>
+	<map>
+	<cmath>
+	<bitset>
+	"Vetor.h"
+
+1497830401 c:\users\thenasker\desktop\unifacs\lp\av2\exercicio5\include\vetor.h
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<windows.h>
+	<fstream>
+	<ctime>
+	<sstream>
+	<dirent.h>
+	<vector>
+	<iostream>
+	<algorithm>
+	<map>
+	<cmath>
+	<bitset>
+
+1497836516 source:c:\users\thenasker\desktop\unifacs\lp\av2\exercicio5\src\vetor.cpp
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<windows.h>
+	<fstream>
+	<ctime>
+	<sstream>
+	<dirent.h>
+	<vector>
+	<iostream>
+	<algorithm>
+	<map>
+	<cmath>
+	<bitset>
+	"Vetor.h"
+

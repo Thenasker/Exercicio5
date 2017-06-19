@@ -24,10 +24,10 @@ class Vetor
     private:
 
         int dimen;
+        float * vals;
+        float modulo;
 
     public:
-
-        float * vals;
 
         Vetor();
         void setDim(int dim);
@@ -36,6 +36,8 @@ class Vetor
         void multEscalar(float escalar);
         int getDimen();
         string aString();
+        void setModulo();
+        float getModulo();
 };
 
 #endif // VETOR_H

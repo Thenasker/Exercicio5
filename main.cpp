@@ -28,10 +28,10 @@
 
 /////////////////////////////DEFINES
 //Definiçao do string do menu
-#define menu "\n1-- Ortogonalizar vetores\n\n2--\n\n3--\n\n4--\n\n0--Sair\n\n"//Definiçao do tamaño do nome dos arquivos a salver e do formato deles
+#define menu "\n1-- Ortogonalizar vetores\n\n2-- Achar base ortonormal\n\n3-- Projecao de um vetor sobre um subespaco de V\n\n0--Sair\n\n"//Definiçao do tamaño do nome dos arquivos a salver e do formato deles
 #define CHAR_VACIO '_'
-#define DIMMAX 5
-#define NUMMAX 5
+#define DIMMAX 10
+#define NUMMAX 10
 /////////////////////////////DEFINES
 
 using namespace std;
@@ -100,60 +100,106 @@ Vetor subs(Vetor v, Vetor u){
     return s;
 }
 
-Vetor getAlfa(Vetor *vetores, Vetor v, int j){
+Vetor soma(Vetor v, Vetor u){
+
+    Vetor s;
+
+    s.setDim(v.getDimen());
+
+    for(int i=0; i<v.getDimen() ; i++){
+        s.inserirValor(i,v.lerVal(i) + u.lerVal(i));
+    }
+
+    return s;
+}
+
+Vetor getAlfa(Vetor vetorj, Vetor v){
 
     Vetor aux;
+    aux.setDim(vetorj.getDimen());
 
-    aux = vetores[j];
+    for(int i=0; i< aux.getDimen() ; i++){
+        aux.inserirValor(i, vetorj.lerVal(i));
+    }
 
     aux.multEscalar(escalar(v,aux)/escalar(aux,aux));
 
     return aux;
 }
 
-void ortogonalizar(Vetor *vetores, int num){
+void ortogonalizar(vector<Vetor> &vetores, int num){
 
     Vetor aux;
-    aux.setDim(vetores[0].getDimen());
+    aux.setDim(vetores.at(0).getDimen());
 
     system("cls");
 
-    for(int i=1 ; i<num ; i++){
+    for(int i=0 ; i<num ; i++){
 
-        aux = vetores[i];
+        aux = vetores.at(i);
 
         for(int j=i-1 ; j>=0 ; j--){
-            vetores[i] = subs(vetores[i],getAlfa(vetores,aux,j));
+
+            vetores.at(i) = subs(vetores.at(i),getAlfa(vetores.at(j),aux));
+
         }
-        cout << vetores[i].aString() << endl;
+    }
+}
+
+void ortonormalizar(vector<Vetor> &vetores, int num){
+
+    for(int i=0 ; i<num ; i++){
+        vetores.at(i).setModulo();
+        for(int j=0 ; j<vetores.at(i).getDimen(); j++){
+            vetores.at(i).inserirValor(j,vetores.at(i).lerVal(j)/vetores.at(i).getModulo());
+        }
     }
 
-/*
+}
 
-    for(int k=0; k< numVet; k++){
+bool comprobarIndependencia(vector<Vetor> &vetores, int num){
 
-        cout << "(";
-        for(int l=0; l< vetores[k].getDimen(); l++){
-            cout << vetores[k].lerVal(l) << ",";
+    bool indep = true;
+    int cont=0;
+    float r=0;
+
+    for(int i=0 ; i<num ; i++){
+        for(int j=0 ; j<num ; j++){
+            if(i!=j){
+                r = vetores.at(i).lerVal(0)/vetores.at(j).lerVal(0);
+                for(int k=0 ; k<vetores.at(i).getDimen() ; k++){
+
+                    if(vetores.at(i).lerVal(k)/vetores.at(j).lerVal(k) == r) cont++;
+                }
+                if(cont == vetores.at(i).getDimen()) indep = false;
+                cont = 0;
+            }
         }
+    }
 
-        cout << ")" << endl;
-    }*/
-    system("pause");
+    return indep;
+}
+
+void projecao(vector<Vetor> vetores, Vetor &v, int num){
+
+    Vetor aux;
+    aux.setDim(v.getDimen());
+
+    for(int i=0 ; i<num ; i++){
+        vetores.at(i).multEscalar(escalar(vetores.at(i),v));
+        aux = soma(aux,vetores.at(i));
+    }
+
+    v = aux;
 
 }
 
 bool opcao1(){
 
-    //TODO: LER DIMEN
-    //TODO: CRIAR ARRAY Vetor
-    //TODO: ENCHER ARRAY
-    //TODO: ORTO
-
     int dim=0;
     int numVet=0;
     int val=0;
-    Vetor *vetores;
+    vector<Vetor> vetores;
 
     system("cls");
 
@@ -171,32 +217,176 @@ bool opcao1(){
 
     }
 
-    vetores = new Vetor[numVet];
     system("cls");
 
     for(int i=0; i< numVet; i++){
-        vetores[i].setDim(dim);
 
+        Vetor aux;
+        aux.setDim(dim);
         for(int j=0; j<dim; j++){
             cout << "Vetor " << i+1 << " coordenada " << j+1 << endl;
             cin >> val;
-            vetores[i].inserirValor(j,val);
+            aux.inserirValor(j,val);
         }
+
+        vetores.push_back(aux);
     }
 
-    ortogonalizar(vetores, numVet);
+    if(comprobarIndependencia(vetores, numVet)){
 
-    /*for(int i=0; i< numVet; i++){
+        ortogonalizar(vetores, numVet);
 
-        cout << "(";
-        for(int j=0; j< dim; j++){
-            cout << vetores[i].lerVal(j) << ",";
+        cout << endl;
+        for(int i=0 ; i<numVet ; i++){
+            cout << "v" << i+1 << "' = " << vetores.at(i).aString() << endl;
         }
 
-        cout << ")" << endl;
-    }*/
+    }else{
+        system("cls");
+        cout << "Os vetores nao sao linealmente independientes. Tente de novo com outros vetores." << endl;
+        system("pause");
+        return false;
+    }
 
-    system("pause");
+    //devolvemos o valor que vamos obter da funçao finalizar()
+    return finalizar();
+}
+
+bool opcao2(){
+
+    int dim=0;
+    int numVet=0;
+    int val=0;
+    vector<Vetor> vetores;
+
+    system("cls");
+
+    while(dim<2 || dim>DIMMAX){ //DIM MAXIMA MODIFICAVEL
+
+        cout << "Inserir dimensao do espaco vetorial (MAX " << DIMMAX << ")." << endl;
+        cin >> dim;
+
+    }
+
+    while(numVet<2 || numVet>NUMMAX){ //NUM MAXIMO MODIFICAVEL
+
+        cout << "Inserir quantidade de vetores (MAX " << DIMMAX << ")." << endl;
+        cin >> numVet;
+
+    }
+
+    system("cls");
+
+    for(int i=0; i< numVet; i++){
+
+        Vetor aux;
+        aux.setDim(dim);
+        for(int j=0; j<dim; j++){
+            cout << "Vetor " << i+1 << " coordenada " << j+1 << endl;
+            cin >> val;
+            aux.inserirValor(j,val);
+        }
+
+        vetores.push_back(aux);
+    }
+
+
+    if(comprobarIndependencia(vetores, numVet)){
+
+        ortogonalizar(vetores, numVet);
+
+        ortonormalizar(vetores, numVet);
+
+        cout << "\nB = {";
+        for(int i=0 ; i<numVet ; i++){
+            cout << vetores.at(i).aString();
+            if(i != numVet-1)  cout << " , ";
+        }
+        cout << "}" << endl;
+
+    }else{
+        system("cls");
+        cout << "Os vetores nao sao linealmente independientes. Tente de novo com outros vetores." << endl;
+        system("pause");
+        return false;
+    }
+
+    //devolvemos o valor que vamos obter da funçao finalizar()
+    return finalizar();
+}
+
+bool opcao3(){
+
+    int dim=0;
+    int numVet=0;
+    int val=0;
+    vector<Vetor> vetores;
+    Vetor v;
+    stringstream ss;
+
+    system("cls");
+
+    while(dim<2 || dim>DIMMAX){ //DIM MAXIMA MODIFICAVEL
+
+        cout << "Inserir dimensao do espaco vetorial (MAX " << DIMMAX << ")." << endl;
+        cin >> dim;
+
+    }
+
+    v.setDim(dim);
+
+    while(numVet<2 || numVet>NUMMAX){ //NUM MAXIMO MODIFICAVEL
+
+        cout << "Inserir quantidade de vetores que vao formar a Base ortonormal (MAX " << DIMMAX << ")." << endl;
+        cin >> numVet;
+
+    }
+
+    system("cls");
+
+    for(int i=0; i< numVet; i++){
+
+        Vetor aux;
+        aux.setDim(dim);
+        for(int j=0; j<dim; j++){
+            cout << "Vetor " << i+1 << " coordenada " << j+1 << endl;
+            cin >> val;
+            aux.inserirValor(j,val);
+        }
+
+        vetores.push_back(aux);
+    }
+
+
+    if(comprobarIndependencia(vetores, numVet)){
+
+        ortogonalizar(vetores, numVet);
+
+        ortonormalizar(vetores, numVet);
+
+        ss << "\n Vetor projetado na base B = {";
+        for(int i=0 ; i<numVet ; i++){
+            ss << vetores.at(i).aString();
+            if(i != numVet-1)  ss << " , ";
+        }
+
+        for(int j=0; j<dim; j++){
+            cout << "Vetor a projetar. Coordenada " << j+1 << endl;
+            cin >> val;
+            v.inserirValor(j,val);
+        }
+
+        projecao(vetores, v, numVet);
+
+        cout << ss.str() << "}: " << v.aString() <<endl;
+
+    }else{
+        system("cls");
+        cout << "Os vetores nao sao linealmente independientes. Tente de novo com outros vetores." << endl;
+        system("pause");
+        return false;
+    }
+
     //devolvemos o valor que vamos obter da funçao finalizar()
     return finalizar();
 }
@@ -224,10 +414,10 @@ int main(){
                 finalizar = opcao1();
                 break;
             case(2):
-                //finalizar = opcao2();
+                finalizar = opcao2();
                 break;
             case(3):
-                //finalizar = opcao3();
+                finalizar = opcao3();
                 break;
             case(4):
                 //finalizar = opcao4();
